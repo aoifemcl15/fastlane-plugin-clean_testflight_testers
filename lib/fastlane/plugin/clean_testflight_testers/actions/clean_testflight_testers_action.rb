@@ -5,12 +5,9 @@ module Fastlane
         require 'spaceship'
 
         app_identifier = params[:app_identifier]
-        username = params[:username]
+        api_token = params[:api_key]
 
-        UI.message("Login to iTunes Connect (#{username})")
-        Spaceship::Tunes.login(username)
-        Spaceship::Tunes.select_team
-        UI.message("Login successful")
+        Spaceship::ConnectAPI.token = api_token
 
         UI.message("Fetching all TestFlight testers, this might take a few minutes, depending on the number of testers")
 
