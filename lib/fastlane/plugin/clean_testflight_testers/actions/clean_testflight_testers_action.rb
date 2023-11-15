@@ -15,7 +15,7 @@ module Fastlane
         UI.user_error!("Couldn't find app '#{app_identifier}'") unless spaceship_app
         UI.message("Found app with name '#{spaceship_app.name}'")
 
-        all_testers = spaceship_app.get_beta_testers(includes: "apps,metrics,betaTesterUsages", limit: 10)
+        all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
         counter = 0
 
         all_testers.each do |current_tester|
