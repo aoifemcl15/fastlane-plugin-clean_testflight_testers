@@ -14,7 +14,7 @@ module Fastlane
         spaceship_app ||= Spaceship::ConnectAPI::App.find(app_identifier)
         UI.user_error!("Couldn't find app '#{app_identifier}'") unless spaceship_app
 
-        all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
+        all_testers = spaceship_app.get_beta_testers(includes: "apps,betaTesterMetrics,betaGroups")
         counter = 0
 
         all_testers.each do |current_tester|
