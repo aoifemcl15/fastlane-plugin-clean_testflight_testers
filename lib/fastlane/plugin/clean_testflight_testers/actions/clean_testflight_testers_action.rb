@@ -73,15 +73,12 @@ module Fastlane
       end
 
       def self.available_options
-        user = CredentialsManager::AppfileConfig.try_fetch_value(:itunes_connect_id)
-        user ||= CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-
         [
-          FastlaneCore::ConfigItem.new(key: :username,
-                                     short_option: "-u",
-                                     env_name: "CLEAN_TESTFLIGHT_TESTERS_USERNAME",
-                                     description: "Your Apple ID Username",
-                                     default_value: user),
+          FastlaneCore::ConfigItem.new(key: :api_key,
+                                     short_option: "-k",
+                                     env_name: "CLEAN_TESTFLIGHT_TESTERS_API_KEY",
+                                     description: "App Store Connect API Key",
+                                     default_value: key),
           FastlaneCore::ConfigItem.new(key: :app_identifier,
                                        short_option: "-a",
                                        env_name: "CLEAN_TESTFLIGHT_TESTERS_APP_IDENTIFIER",
