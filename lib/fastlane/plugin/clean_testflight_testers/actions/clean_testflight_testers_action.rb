@@ -75,7 +75,7 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :api_key,
-                                     short_option: "-k",
+                                     short_option: "-p",
                                      env_name: "CLEAN_TESTFLIGHT_TESTERS_API_KEY",
                                      description: "App Store Connect API Key",
                                      default_value: {},
