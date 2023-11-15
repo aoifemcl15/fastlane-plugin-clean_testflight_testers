@@ -5,9 +5,8 @@ module Fastlane
         require 'spaceship'
 
         app_identifier = params[:app_identifier]
-        api_token = params[:api_key]
 
-        Spaceship::ConnectAPI.token = api_token
+        Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: params[:api_key])
 
         UI.message("Fetching all TestFlight testers, this might take a few minutes, depending on the number of testers")
 
