@@ -79,7 +79,7 @@ module Fastlane
                                      env_name: "CLEAN_TESTFLIGHT_TESTERS_API_KEY",
                                      description: "App Store Connect API Key",
                                      default_value: {},
-                                     type: Hash)
+                                     type: Hash),
           FastlaneCore::ConfigItem.new(key: :app_identifier,
                                        short_option: "-a",
                                        env_name: "CLEAN_TESTFLIGHT_TESTERS_APP_IDENTIFIER",
