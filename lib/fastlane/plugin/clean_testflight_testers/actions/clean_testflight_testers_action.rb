@@ -12,7 +12,7 @@ module Fastlane
 
         # Convert from bundle identifier to app ID
         spaceship_app ||= Spaceship::ConnectAPI::App.find(app_identifier)
-        UI.user_error!("Couldn't find app '#{app_identifier}' on the account of '#{username}' on iTunes Connect") unless spaceship_app
+        UI.user_error!("Couldn't find app '#{app_identifier}'") unless spaceship_app
 
         all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
         counter = 0
