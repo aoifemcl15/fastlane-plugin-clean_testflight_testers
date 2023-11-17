@@ -19,12 +19,12 @@ module Fastlane
         UI.user_error!("Couldn't find app '#{app_identifier}' on the account of '#{username}' on iTunes Connect") unless spaceship_app
 
         all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
-        UI.message("Fetched TestFlight testers '#{all_testers}'")
         counter = 0
 
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
-
+          UI.message("Current tester metric '#{tester_metrics}'")
+          UI.message("Current tester last modified date '#{tester_metrics.last_modified_date}'")
           time = Time.parse(tester_metrics.last_modified_date)
           days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
