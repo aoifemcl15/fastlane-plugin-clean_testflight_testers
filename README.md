@@ -4,11 +4,13 @@
 
 ## Getting Started
 
-This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-clean_testflight_testers`, add it to your project by running:
+This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. 
 
-```bash
-fastlane add_plugin clean_testflight_testers
-```
+This is a fork of https://github.com/fastlane-community/fastlane-plugin-clean_testflight_testers and includes a couple of improvements: 
+1. Ensures the plugin still runs if it encounters a tester with no available metrics
+2. Uses the build version, instead of app version string for oldest build comparison
+
+You can point to this version of the plugin by adding `gem 'fastlane-plugin-clean_testflight_testers', :git => 'https://github.com/aoifemcl15/fastlane-plugin-clean_testflight_testers'` to your PluginFile. 
 
 ## About clean_testflight_testers
 
@@ -32,6 +34,11 @@ end
 # Specify a custom number for what's "inactive"
 lane :clean do
   clean_testflight_testers(days_of_inactivity: 120) # 120 days, so about 4 months
+end
+
+# Specify an oldest build number for what's "inactive"
+lane :clean do
+  clean_testflight_testers(oldest_build_number: 999) # users who are have got a build prior to 999 should be removed
 end
 
 # Provide custom app identifier / username
