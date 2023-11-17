@@ -23,8 +23,18 @@ module Fastlane
 
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
-          UI.message("Current tester metric '#{tester_metrics}'")
-          UI.message("Current tester last modified date '#{tester_metrics.last_modified_date}'")
+
+          # Check if tester_metrics is not nil
+          if tester_metrics.nil?
+            UI.message("Skipping tester '#{current_tester}' as beta_tester_metrics is nil")
+            next
+          end
+
+          if tester_metrics.last_modified_date.nil?
+            UI.message("Skipping tester '#{current_tester}' as last_modified_date is nil")
+            next
+          end
+          
           time = Time.parse(tester_metrics.last_modified_date)
           days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
