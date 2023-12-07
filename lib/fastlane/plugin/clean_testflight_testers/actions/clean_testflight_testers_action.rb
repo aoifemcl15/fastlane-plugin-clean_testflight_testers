@@ -24,14 +24,15 @@ module Fastlane
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
 
-          # Check if tester_metrics is not nil
           if tester_metrics.nil?
-            UI.message("Skipping tester '#{current_tester}' as beta_tester_metrics is nil")
+            remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
+            counter += 1
             next
           end
 
           if tester_metrics.last_modified_date.nil?
-            UI.message("Skipping tester '#{current_tester}' as last_modified_date is nil")
+            remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
+            counter += 1
             next
           end
           
