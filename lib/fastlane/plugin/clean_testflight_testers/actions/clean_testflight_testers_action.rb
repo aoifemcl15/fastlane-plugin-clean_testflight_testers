@@ -23,12 +23,13 @@ module Fastlane
         invalidDataCounter = 0
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
-          installed_bundle_short_version = current_tester.installedCfBundleShortVersionString
+          installed_bundle_version = current_tester.installedCfBundleVersion
 
           if tester_metrics.nil?
-            UI.message("TestFlight tester #{current_tester} have verson #{installed_bundle_short_version} installed")
+            if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < params[:oldest_build_allowed]
+              UI.message("TestFlight tester #{current_tester} has verson #{installed_bundle_version} installed and should be removed")
             # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
-            # invalidDataCounter += 1
+            invalidDataCounter += 1
             next
           end
 
