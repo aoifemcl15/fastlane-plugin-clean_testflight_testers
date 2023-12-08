@@ -27,8 +27,7 @@ module Fastlane
 
           if tester_metrics.nil?
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version.to_i} installed")
-            # if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < params[:oldest_build_allowed]
-            if installed_bundle_version.to_i > 0
+            if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < params[:oldest_build_allowed].to_i
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
             # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
             invalidDataCounter += 1
