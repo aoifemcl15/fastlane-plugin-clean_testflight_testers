@@ -20,19 +20,19 @@ module Fastlane
 
         all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
         counter = 0
-
+        invalidDataCounter = 0
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
 
           if tester_metrics.nil?
             remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
-            counter += 1
+            invalidDataCounter += 1
             next
           end
 
           if tester_metrics.last_modified_date.nil?
             remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
-            counter += 1
+            invalidDataCounter += 1
             next
           end
           
@@ -60,7 +60,7 @@ module Fastlane
         end
 
         if params[:dry_run]
-          UI.success("Didn't delete any testers, but instead only printed them out (#{counter}), disable `dry_run` to actually delete them 🦋")
+          UI.success("Didn't delete any testers, but instead only printed them out (#{counter}), and (#{invalidDataCounter}) missing tester metric users, disable `dry_run` to actually delete them 🦋")
         else
           UI.success("Successfully removed #{counter} testers 🦋")
         end
