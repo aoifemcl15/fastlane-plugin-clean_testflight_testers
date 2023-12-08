@@ -6,6 +6,7 @@ module Fastlane
 
         app_identifier = params[:app_identifier]
         username = params[:username]
+        oldestBuildNumber = params[:oldest_build_number].to_i
 
         UI.message("Login to iTunes Connect (#{username})")
         Spaceship::Tunes.login(username)
@@ -27,7 +28,7 @@ module Fastlane
 
           if tester_metrics.nil?
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version.to_i} installed")
-            if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < 21911
+            if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
             # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
             invalidDataCounter += 1
