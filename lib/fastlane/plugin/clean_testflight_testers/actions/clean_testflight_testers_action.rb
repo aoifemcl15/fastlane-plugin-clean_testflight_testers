@@ -31,6 +31,7 @@ module Fastlane
             # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
             invalidDataCounter += 1
             end
+            next
           end
             
           
