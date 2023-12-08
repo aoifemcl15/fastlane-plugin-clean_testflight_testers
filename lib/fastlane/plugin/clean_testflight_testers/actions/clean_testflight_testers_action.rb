@@ -30,11 +30,11 @@ module Fastlane
             next
           end
 
-          if tester_metrics.last_modified_date.nil?
-            remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
-            invalidDataCounter += 1
-            next
-          end
+          # if tester_metrics.last_modified_date.nil?
+          #   remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
+          #   invalidDataCounter += 1
+          #   next
+          # end
           
           time = Time.parse(tester_metrics.last_modified_date)
           days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
