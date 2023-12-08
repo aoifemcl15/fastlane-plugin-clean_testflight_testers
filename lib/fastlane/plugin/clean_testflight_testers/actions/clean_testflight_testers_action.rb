@@ -6,7 +6,7 @@ module Fastlane
 
         app_identifier = params[:app_identifier]
         username = params[:username]
-        oldestBuildNumber = params[:oldest_build_number].to_i
+        oldestBuildNumber = params[:oldest_build_allowed].to_i
 
         UI.message("Login to iTunes Connect (#{username})")
         Spaceship::Tunes.login(username)
