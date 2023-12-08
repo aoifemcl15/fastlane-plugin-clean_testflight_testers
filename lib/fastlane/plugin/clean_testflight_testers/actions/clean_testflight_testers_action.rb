@@ -30,8 +30,10 @@ module Fastlane
               UI.message("TestFlight tester #{current_tester} has verson #{installed_bundle_version} installed and should be removed")
             # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
             invalidDataCounter += 1
-            next
+            end
           end
+            
+          
 
           # if tester_metrics.last_modified_date.nil?
           #   remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
