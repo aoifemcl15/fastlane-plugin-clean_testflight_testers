@@ -21,28 +21,19 @@ module Fastlane
 
         all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
         counter = 0
-        invalidDataCounter = 0
         all_testers.each do |current_tester|
           tester_metrics = current_tester.beta_tester_metrics.first
           installed_bundle_version = current_tester.installedCfBundleVersion
 
+          # Since version 2.4 of the App Store Connect API, beta tester metrics are not available in the same way - this step allows us to remove testers who have older builds installed
           if tester_metrics.nil?
-            UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version.to_i} installed")
             if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
-            # remove_tester(current_tester, spaceship_app, params[:dry_run]) # tester metrics are nil, remove
-            invalidDataCounter += 1
+            remove_tester(current_tester, spaceship_app, params[:dry_run]) # user has an old build installed, let's remove
+            counter += 1
               end
             next
           end
-            
-          
-
-          # if tester_metrics.last_modified_date.nil?
-          #   remove_tester(current_tester, spaceship_app, params[:dry_run]) # cannot read tester's last modified date, remove
-          #   invalidDataCounter += 1
-          #   next
-          # end
           
           time = Time.parse(tester_metrics.last_modified_date)
           days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
@@ -68,7 +59,7 @@ module Fastlane
         end
 
         if params[:dry_run]
-          UI.success("Didn't delete any testers, but instead only printed them out (#{counter}), and (#{invalidDataCounter}) missing tester metric users, disable `dry_run` to actually delete them 🦋")
+          UI.success("Didn't delete any testers, but instead only printed them out (#{counter}) disable `dry_run` to actually delete them 🦋")
         else
           UI.success("Successfully removed #{counter} testers 🦋")
         end
