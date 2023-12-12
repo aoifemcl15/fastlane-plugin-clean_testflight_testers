@@ -4,13 +4,15 @@
 
 ## Getting Started
 
-This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. 
+This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. Due to incompatiblity with the App Store Connect API specifically around beta tester metrics, this plugin has a dependency on a fork of the fastlane repo - https://github.com/Xjkstar/fastlane.git. 
 
 This is a fork of https://github.com/fastlane-community/fastlane-plugin-clean_testflight_testers and includes a couple of improvements: 
 1. Ensures the plugin still runs if it encounters a tester with no available metrics
 2. Uses the build version, instead of app version string for oldest build comparison
+3. Uses new fields from the App Store Connect API to read beta teser metrics, eg. installed build - this is why the plugin requires https://github.com/Xjkstar/fastlane.git. 
 
 You can point to this version of the plugin by adding `gem 'fastlane-plugin-clean_testflight_testers', :git => 'https://github.com/aoifemcl15/fastlane-plugin-clean_testflight_testers'` to your PluginFile. 
+Additionally, you will also need to add `gem "fastlane", :git => 'https://github.com/Xjkstar/fastlane.git'` in your Gemfile. 
 
 ## About clean_testflight_testers
 
