@@ -35,28 +35,28 @@ module Fastlane
             next
           end
           
-          time = Time.parse(tester_metrics.last_modified_date)
-          days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
+          # time = Time.parse(tester_metrics.last_modified_date)
+          # days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
-          if tester_metrics.beta_tester_state == "INVITED"
-            if days_since_status_change > params[:days_of_inactivity]
-              remove_tester(current_tester, spaceship_app, params[:dry_run]) # user got invited, but never installed a build... why would you do that?
-              counter += 1
-            end
-          else
-            # We don't really have a good way to detect whether the user is active unfortunately
-            # So we can just delete users that had no sessions
-            if days_since_status_change > params[:days_of_inactivity] && tester_metrics.session_count == 0
-              # User had no sessions in the last e.g. 30 days, let's get rid of them
-              remove_tester(current_tester, spaceship_app, params[:dry_run])
-              counter += 1
-            elsif params[:oldest_build_allowed] && tester_metrics.installed_cf_bundle_version.to_i > 0 && tester_metrics.installed_cf_bundle_version.to_i < params[:oldest_build_allowed]
-              # User has a build that is too old, let's get rid of them
-              remove_tester(current_tester, spaceship_app, params[:dry_run])
-              counter += 1
-            end
-          end
-        end
+        #   if tester_metrics.beta_tester_state == "INVITED"
+        #     if days_since_status_change > params[:days_of_inactivity]
+        #       remove_tester(current_tester, spaceship_app, params[:dry_run]) # user got invited, but never installed a build... why would you do that?
+        #       counter += 1
+        #     end
+        #   else
+        #     # We don't really have a good way to detect whether the user is active unfortunately
+        #     # So we can just delete users that had no sessions
+        #     if days_since_status_change > params[:days_of_inactivity] && tester_metrics.session_count == 0
+        #       # User had no sessions in the last e.g. 30 days, let's get rid of them
+        #       remove_tester(current_tester, spaceship_app, params[:dry_run])
+        #       counter += 1
+        #     elsif params[:oldest_build_allowed] && tester_metrics.installed_cf_bundle_version.to_i > 0 && tester_metrics.installed_cf_bundle_version.to_i < params[:oldest_build_allowed]
+        #       # User has a build that is too old, let's get rid of them
+        #       remove_tester(current_tester, spaceship_app, params[:dry_run])
+        #       counter += 1
+        #     end
+        #   end
+        # end
 
         if params[:dry_run]
           UI.success("Didn't delete any testers, but instead only printed them out (#{counter}) disable `dry_run` to actually delete them 🦋")
