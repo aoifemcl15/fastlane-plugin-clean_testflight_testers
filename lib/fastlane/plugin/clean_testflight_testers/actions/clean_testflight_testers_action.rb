@@ -34,7 +34,7 @@ module Fastlane
               end
             next
           end
-          
+        end  
           # time = Time.parse(tester_metrics.last_modified_date)
           # days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
