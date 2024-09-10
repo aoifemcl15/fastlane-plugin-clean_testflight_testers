@@ -25,44 +25,38 @@ module Fastlane
           tester_metrics = current_tester.beta_tester_metrics.first
           installed_bundle_version = current_tester.installedCfBundleVersion
 
-          if tester_metrics
-            if tester_metrics.last_modified_date
-              time = Time.parse(tester_metrics.last_modified_date)
-              days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
-              # User got invited, but never installed a build
-              if tester_metrics.beta_tester_state == "INVITED"
-                if days_since_status_change > params[:days_of_inactivity]
-                  remove_tester(current_tester, spaceship_app, params[:dry_run], "never installed a build") 
-                  counter += 1
-                end
-                next
-              elsif tester_metrics.session_count && tester_metrics.session_count == 0
-                if days_since_status_change > params[:days_of_inactivity]
-                  # User had no sessions in the last e.g. 30 days, let's get rid of them
-                  remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the given period")
-                  counter += 1
-                end
-                next
-              end
+          if tester_metrics && tester_metrics.last_modified_date
+            time = Time.parse(tester_metrics.last_modified_date)
+            days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
+
+            # User got invited, but never installed a build
+            if tester_metrics.beta_tester_state == "INVITED" && days_since_status_change > params[:days_of_inactivity]
+              remove_tester(current_tester, spaceship_app, params[:dry_run], "never installed a build") 
+              counter += 1
+              next
+            elsif tester_metrics.session_count && tester_metrics.session_count == 0 && days_since_status_change > params[:days_of_inactivity]
+              # User had no sessions in the last e.g. 30 days, let's get rid of them
+              remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the given period")
+              counter += 1
+              next
             end
           end
 
           # Lastly, regardless of whether the user didn't have any tester metrics, make sure they have an up-to-date build, otherwise remove them.
-          if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
-            UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
-            remove_tester(current_tester, spaceship_app, params[:dry_run], "have an old build installed") 
-            counter += 1
-          end
+        if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
+          remove_tester(current_tester, spaceship_app, params[:dry_run], "have an old build installed") 
+          counter += 1
           next
         end
+      end
 
-        if params[:dry_run]
-          UI.success("Didn't delete any testers, but instead only printed them out (#{counter}) disable `dry_run` to actually delete them 🦋")
-        else
-          UI.success("Successfully removed #{counter} testers 🦋")
-        end
-        end
+      if params[:dry_run]
+        UI.success("Didn't delete any testers, but instead only printed them out (#{counter}) disable `dry_run` to actually delete them 🦋")
+      else
+        UI.success("Successfully removed #{counter} testers 🦋")
+      end
+    end
 
 
       def self.remove_tester(tester, app, dry_run, reason)
