@@ -25,6 +25,7 @@ module Fastlane
           tester_metrics = current_tester.beta_tester_metrics.first
           installed_bundle_version = current_tester.installedCfBundleVersion
 
+          if tester_metrics 
           # first, remove all users who didn't install a build  (not all users have the last_modified_dateb or even tester_metrics)
           if tester_metrics.last_modified_date 
               time = Time.parse(tester_metrics.last_modified_date)
@@ -38,18 +39,19 @@ module Fastlane
             next
 
           # then, remove all users who have had no sessions within the given `days of inactivity`
-          elsif tester_metrics.session_count
+          elsif tester_metrics.session_count && tester_metrics.session_count == 0
             # We don't really have a good way to detect whether the user is active unfortunately
             # So we can just delete users that had no sessions
-            if days_since_status_change > params[:days_of_inactivity] && tester_metrics.session_count == 0
+            if days_since_status_change > params[:days_of_inactivity] 
               # User had no sessions in the last e.g. 30 days, let's get rid of them
               remove_tester(current_tester, spaceship_app, params[:dry_run])
               counter += 1
             end
             next
           end
+        end
 
-          # lastly, if they are still there, make sure they have an up-to-date build
+          # lastly, if they are still there, and didn't have any tester metrics, make sure they have an up-to-date build
             if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
             remove_tester(current_tester, spaceship_app, params[:dry_run]) # user has an old build installed, let's remove
