@@ -26,22 +26,21 @@ module Fastlane
           installed_bundle_version = current_tester.installedCfBundleVersion
 
           if tester_metrics
-            # First, remove all users who didn't install a build 
             if tester_metrics.last_modified_date
               time = Time.parse(tester_metrics.last_modified_date)
               days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
+              # User got invited, but never installed a build
               if tester_metrics.beta_tester_state == "INVITED"
                 if days_since_status_change > params[:days_of_inactivity]
-                  remove_tester(current_tester, spaceship_app, params[:dry_run]) # User got invited, but never installed a build
+                  remove_tester(current_tester, spaceship_app, params[:dry_run], "never installed a build") 
                   counter += 1
                 end
                 next
-              # Then, remove all users who have had no sessions within the given `days of inactivity`
               elsif tester_metrics.session_count && tester_metrics.session_count == 0
                 if days_since_status_change > params[:days_of_inactivity]
                   # User had no sessions in the last e.g. 30 days, let's get rid of them
-                  remove_tester(current_tester, spaceship_app, params[:dry_run])
+                  remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the given period")
                   counter += 1
                 end
                 next
@@ -49,10 +48,10 @@ module Fastlane
             end
           end
 
-          # Lastly, if they are still there, and didn't have any tester metrics, make sure they have an up-to-date build
+          # Lastly, regardless of whether the user didn't have any tester metrics, make sure they have an up-to-date build, otherwise remove them.
           if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
             UI.message("TestFlight tester #{current_tester} has version #{installed_bundle_version} installed and should be removed")
-            remove_tester(current_tester, spaceship_app, params[:dry_run]) # User has an old build installed, let's remove
+            remove_tester(current_tester, spaceship_app, params[:dry_run], "have an old build installed") 
             counter += 1
           end
           next
@@ -66,11 +65,11 @@ module Fastlane
         end
 
 
-      def self.remove_tester(tester, app, dry_run)
+      def self.remove_tester(tester, app, dry_run, reason)
         if dry_run
-          UI.message("TestFlight tester #{tester.email} seems to be inactive for app ID #{app.id}")
+          UI.message("TestFlight tester #{tester.email} for app ID #{app.id} should be removed because they #{reason}")
         else
-          UI.message("Removing tester #{tester.email} due to inactivity from app ID #{app.id}...")
+          UI.message("Removing tester #{tester.email} for app ID #{app.id} because they #{reason}")
           tester.delete_from_apps(apps: [app])
         end
       end
@@ -95,7 +94,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :username,
                                      short_option: "-u",
                                      env_name: "CLEAN_TESTFLIGHT_TESTERS_USERNAME",
-                                     description: "Your Apple ID Username - Test",
+                                     description: "Your Apple ID Username",
                                      default_value: user),
           FastlaneCore::ConfigItem.new(key: :app_identifier,
                                        short_option: "-a",
