@@ -25,10 +25,8 @@ module Fastlane
           tester_metrics = current_tester.beta_tester_metrics.first
           installed_bundle_version = current_tester.installedCfBundleVersion
 
-
-# then, remove all users who have had no sessions in the last 30 days
-# lastly, if they are still there, make sure they have an up-to-date build
-          if tester_metrics.last_modified_date # first, remove all users who didn't install a build  (not all users have the last_modified_date or even tester_metrics)
+          # first, remove all users who didn't install a build  (not all users have the last_modified_dateb or even tester_metrics)
+          if tester_metrics.last_modified_date 
               time = Time.parse(tester_metrics.last_modified_date)
               days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
@@ -38,6 +36,8 @@ module Fastlane
               counter += 1
             end
             next
+
+          # then, remove all users who have had no sessions within the given `days of inactivity`
           elsif tester_metrics.session_count
             # We don't really have a good way to detect whether the user is active unfortunately
             # So we can just delete users that had no sessions
@@ -56,7 +56,6 @@ module Fastlane
             counter += 1
               end
             next
-        
         end
 
         if params[:dry_run]
