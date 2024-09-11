@@ -7,6 +7,7 @@ module Fastlane
         app_identifier = params[:app_identifier]
         username = params[:username]
         oldestBuildNumber = params[:oldest_build_allowed].to_i
+        days_of_inactivity = params[:days_of_inactivity]
 
         UI.message("Login to ASC API (#{username})")
         Spaceship::ConnectAPI.login(username)
@@ -31,13 +32,13 @@ module Fastlane
             days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
             # User got invited, but never installed a build
-            if tester_metrics.beta_tester_state == "INVITED" && days_since_status_change > params[:days_of_inactivity]
+            if tester_metrics.beta_tester_state == "INVITED" && days_since_status_change > days_of_inactivity
               remove_tester(current_tester, spaceship_app, params[:dry_run], "never installed a build") 
               counter += 1
               next
-            elsif tester_metrics.session_count && tester_metrics.session_count == 0 && days_since_status_change > params[:days_of_inactivity]
-              # User had no sessions in the last e.g. 30 days, let's get rid of them
-              remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the given period")
+            elsif tester_metrics.session_count && tester_metrics.session_count == 0 && days_since_status_change > days_of_inactivity
+              # User had no sessions in the last 60 days, let's get rid of them
+              remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the last #{days_of_inactivity} days")
               counter += 1
               next
             end
