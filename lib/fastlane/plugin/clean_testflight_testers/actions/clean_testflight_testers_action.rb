@@ -65,7 +65,16 @@ module Fastlane
           UI.message("TestFlight tester #{tester.email} for app ID #{app.id} should be removed because they #{reason}")
         else
           UI.message("Removing tester #{tester.email} for app ID #{app.id} because they #{reason}")
-          tester.delete_from_apps(apps: [app])
+          begin
+            tester.delete_from_apps(apps: [app])
+          rescue Spaceship::UnexpectedResponse => e
+            if e.message.include?("The specified resource does not exist")
+              UI.message("Ignoring 404 error: #{e.message}")
+              # Some testers (presumambly those who are already in a Deleted state) will return a 404. This skips these users.
+            else
+              raise # Reraise if it's not a 404-related error
+            end
+          end
         end
       end
 
