@@ -9,10 +9,13 @@ This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. Due
 This is a fork of https://github.com/fastlane-community/fastlane-plugin-clean_testflight_testers and includes a couple of improvements: 
 1. Ensures the plugin still runs if it encounters a tester with no available metrics
 2. Uses the build version, instead of app version string for oldest build comparison
-3. Uses new fields from the App Store Connect API to read beta teser metrics, eg. installed build - this is why the plugin requires https://github.com/Xjkstar/fastlane.git. 
+3. Uses new fields from the App Store Connect API to read beta teser metrics, eg. installed build - this is why the plugin requires https://github.com/Xjkstar/fastlane.git.
+4. Ignores "The specified resource does not exist" errors from the API (presumambly related to users in an already Deleted state).
 
 You can point to this version of the plugin by adding `gem 'fastlane-plugin-clean_testflight_testers', :git => 'https://github.com/aoifemcl15/fastlane-plugin-clean_testflight_testers'` to your PluginFile. 
 Additionally, you will also need to add `gem "fastlane", :git => 'https://github.com/Xjkstar/fastlane.git'` in your Gemfile. 
+
+After making changes to this repo, ensure that you run `fastlane update_plugins` on any users of this plug-in.
 
 ## About clean_testflight_testers
 
