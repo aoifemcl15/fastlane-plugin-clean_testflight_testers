@@ -4,7 +4,7 @@
 
 ## Getting Started
 
-This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. Due to incompatiblity with the App Store Connect API specifically around beta tester metrics, this plugin has a dependency on a fork of the fastlane repo - https://github.com/Xjkstar/fastlane.git. 
+This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. Due to incompatiblity with the App Store Connect API specifically around beta tester metrics, this plugin has a dependency on a fork of a fork of the fastlane repo - [https://github.com/guardian/fastlane.git](https://github.com/guardian/fastlane.git). 
 
 This is a fork of https://github.com/fastlane-community/fastlane-plugin-clean_testflight_testers and includes a couple of improvements: 
 1. Ensures the plugin still runs if it encounters a tester with no available metrics
@@ -13,7 +13,7 @@ This is a fork of https://github.com/fastlane-community/fastlane-plugin-clean_te
 4. Ignores "The specified resource does not exist" errors from the API (presumambly related to users in an already Deleted state).
 
 You can point to this version of the plugin by adding `gem 'fastlane-plugin-clean_testflight_testers', :git => 'https://github.com/aoifemcl15/fastlane-plugin-clean_testflight_testers'` to your PluginFile. 
-Additionally, you will also need to add `gem "fastlane", :git => 'https://github.com/Xjkstar/fastlane.git'` in your Gemfile. 
+Additionally, you will also need to add `gem "fastlane", :git => 'https://github.com/guardian/fastlane.git'` in your Gemfile. 
 
 After making changes to this repo, ensure that you run `fastlane update_plugins` on any users of this plug-in.
 
