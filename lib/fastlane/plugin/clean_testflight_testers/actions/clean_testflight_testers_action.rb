@@ -20,37 +20,40 @@ module Fastlane
         spaceship_app ||= Spaceship::ConnectAPI::App.find(app_identifier)
         UI.user_error!("Couldn't find app '#{app_identifier}' on the account of '#{username}' on iTunes Connect") unless spaceship_app
 
-        all_testers = spaceship_app.get_beta_testers(includes: "betaTesterMetrics", limit: 200)
+        all_testers = spaceship_app.get_beta_testers(limit: 200)
         counter = 0
         all_testers.each do |current_tester|
-          tester_metrics = current_tester.beta_tester_metrics.first
+
+          # See https://docs.google.com/drawings/d/1IS1ce1RgnplzzGFjhwFWDhrIt52rAjie7gZPhLN8piE/edit?usp=sharing for a flow chart of the following logic
+
           installed_bundle_version = current_tester.installedCfBundleVersion
 
+          # 1. Skip testers who already have a recent build
+          if installed_bundle_version.to_i >= oldestBuildNumber
+            next # tester is active, skip further checks
+          end
 
-          if tester_metrics && tester_metrics.last_modified_date
-            time = Time.parse(tester_metrics.last_modified_date)
+          # 2. Remove testers with an old build installed
+          if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
+            remove_tester(current_tester, spaceship_app, params[:dry_run], "have an old build installed")
+            counter += 1
+            next
+          end
+
+          # 3. Remove testers based on inactivity
+          if current_tester.last_modified_date
+            time = Time.parse(current_tester.last_modified_date)
             days_since_status_change = (Time.now - time) / 60.0 / 60.0 / 24.0
 
-            # User got invited, but never installed a build
-            if tester_metrics.beta_tester_state == "INVITED" && days_since_status_change > days_of_inactivity
-              remove_tester(current_tester, spaceship_app, params[:dry_run], "never installed a build") 
-              counter += 1
-              next
-            elsif tester_metrics.session_count && tester_metrics.session_count == 0 && days_since_status_change > days_of_inactivity
-              # User had no sessions in the last 60 days, let's get rid of them
-              remove_tester(current_tester, spaceship_app, params[:dry_run], "didn't have any active sessions in the last #{days_of_inactivity} days")
+            if days_since_status_change > days_of_inactivity
+              # Distinguish between testers who never installed a build and general inactivity
+              reason = current_tester.beta_tester_state == "INVITED" ? "never installed a build" : "have been inactive in the last #{days_of_inactivity} days"
+              remove_tester(current_tester, spaceship_app, params[:dry_run], reason)
               counter += 1
               next
             end
           end
-
-          # Lastly, regardless of whether the user didn't have any tester metrics, make sure they have an up-to-date build, otherwise remove them.
-        if installed_bundle_version.to_i > 0 && installed_bundle_version.to_i < oldestBuildNumber
-          remove_tester(current_tester, spaceship_app, params[:dry_run], "have an old build installed") 
-          counter += 1
-          next
         end
-      end
 
       if params[:dry_run]
         UI.success("Didn't delete any testers, but instead only printed them out (#{counter}) disable `dry_run` to actually delete them 🦋")
@@ -58,7 +61,6 @@ module Fastlane
         UI.success("Successfully removed #{counter} testers 🦋")
       end
     end
-
 
       def self.remove_tester(tester, app, dry_run, reason)
         if dry_run
